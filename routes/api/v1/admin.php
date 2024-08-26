@@ -8,4 +8,7 @@ Route::prefix('admin')->group(function () {
         Route::get('/send', [\App\Http\Controllers\v1\SmsController::class, 'send']);
         Route::get('/{id}', [\App\Http\Controllers\v1\SmsPanelController::class, 'show']);
     });
+    Route::prefix('templates')->group(function () {
+        Route::post('/', [\App\Http\Controllers\v1\TemplateController::class, 'store']);
+    });
 });

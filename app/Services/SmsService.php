@@ -9,6 +9,7 @@ use App\Services\Interfaces\SmsServiceProviderInterface;
 use App\Services\SmsProviderStrategy\SmsIdepardazanProvider;
 use App\Services\SmsProviderStrategy\SmsKavenegarProvider;
 use App\Services\SmsProviderStrategy\SmsRedisProvider;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Cache;
 
 class SmsService
@@ -26,6 +27,22 @@ class SmsService
 
     }
 
+    public function sendMessageByTemplate(string $phone_number, string $template_name, array $data)
+    {
+
+        try {
+            $this->provider->sendSmsByTemplate($phone_number, template_title: $template_name, data: $data);
+        } catch (ProviderFailedException $e) {
+            if (count($this->alternative) > 0) {
+                dispatch(new SendSms(to: $phone_number, topic: $template_name,data:$data,  provider: $this->alternative[0], alternative: $this->alternative));
+            } else {
+                $this->provider = new SmsRedisProvider();
+                $this->provider->sendSms($phone_number, $message);
+            }
+
+
+        }
+    }
 
     public function sendMessageOneToOne(string $phone_number, string $message)
     {
@@ -47,8 +64,8 @@ class SmsService
     private function providerFactory(SMSPanelTypeEnum $enum): SmsServiceProviderInterface
     {
         return match ($enum) {
-            SMSPanelTypeEnum::SMSIDEHPARDAZAN => new SmsIdepardazanProvider(),
-            SMSPanelTypeEnum::KAVENEGAR => new SmsKavenegarProvider(),
+            SMSPanelTypeEnum::SMSIDEHPARDAZAN => App::make(SmsIdepardazanProvider::class),
+            SMSPanelTypeEnum::KAVENEGAR => App::make(SmsKavenegarProvider::class),
             default => new SmsRedisProvider(),
         };
 

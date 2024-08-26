@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
 
-class SendSms implements ShouldQueue
+class SendSms
 {
     use Queueable;
 
@@ -16,8 +16,9 @@ class SendSms implements ShouldQueue
     /**
      * Create a new job instance.
      */
-    public function __construct(string $to, string $topic, int $provider, array $alternative)
+    public function __construct(string $to, private string $topic, private array $data, int $provider, array $alternative)
     {
+
 
         $alternative = array_values(array_diff($alternative, [$provider]));
         $this->smsService = new SmsService(provider: $provider, alternative: $alternative);
@@ -28,6 +29,6 @@ class SendSms implements ShouldQueue
      */
     public function handle(): void
     {
-        $this->smsService->sendMessageOneToOne("09107879978", 'test');
+        $this->smsService->sendMessageByTemplate("09107879978", $this->topic, data: $this->data);
     }
 }

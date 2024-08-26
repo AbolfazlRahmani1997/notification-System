@@ -33,4 +33,9 @@ class SmsRedisProvider implements SmsServiceProviderInterface
     {
         // TODO: Implement healthCheck() method.
     }
+
+    public function sendSmsByTemplate(string $to, string $template_title, array $data)
+    {
+        // TODO: Implement sendSmsByTemplate() method.
+    }
 }
