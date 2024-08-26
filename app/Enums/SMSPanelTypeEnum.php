@@ -10,13 +10,13 @@ enum SMSPanelTypeEnum: int
 
     case KAVENEGAR = 1;
     case SMSIDEHPARDAZAN = 2;
-    case SMs=3;
+
 
 
     public static function priorityList(): array
     {
 
-        return [self::KAVENEGAR->value, self::SMSIDEHPARDAZAN->value,self::SMs->value];
+        return [self::KAVENEGAR->value, self::SMSIDEHPARDAZAN->value];
     }
 
 }

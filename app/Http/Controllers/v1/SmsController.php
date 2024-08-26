@@ -2,17 +2,21 @@
 
 namespace App\Http\Controllers\v1;
 
+use App\Enums\SMSPanelTypeEnum;
+use App\Jobs\SendSms;
 use App\Services\SmsService;
+use Illuminate\Support\Facades\Cache;
 
 class SmsController
 {
-    public function __construct(private SmsService $service)
+    public function __construct()
     {
     }
 
     public function send()
     {
-        $this->service->sendMessageOneToOne();
+
+        dispatch(new SendSms("10", "50", Cache::get("default_Sms_provider",2), SMSPanelTypeEnum::values()));
     }
 
 

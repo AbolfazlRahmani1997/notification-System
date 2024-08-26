@@ -14,11 +14,11 @@ class CircuitBreaker
     public function __construct()
     {
         $this->redis = new \Redis();
-        if ($this->redis->lLen(config('"circuit_breaker.sms_provider.half_open')) == 0 && $this->redis->exists(config('"circuit_breaker.sms_provider.open')) == false) {
+        if ($this->redis->lLen(config('circuit_breaker.sms_provider.half_open')) == 0 && $this->redis->exists(config('"circuit_breaker.sms_provider.open')) == false) {
             $this->listOfProviders = SMSPanelTypeEnum::priorityList();
-            $this->redis->set(config('"circuit_breaker.sms_provider.open'), array_pop($this->listOfProviders));
+            $this->redis->set(config('circuit_breaker.sms_provider.open'), array_pop($this->listOfProviders));
             foreach ($this->listOfProviders as $provider) {
-                $this->redis->lPush(config('"circuit_breaker.sms_provider.open'), $provider);
+                $this->redis->lPush(config('circuit_breaker.sms_provider.open'), $provider);
             }
         }
 
@@ -27,7 +27,7 @@ class CircuitBreaker
 
     public function getCurrent(): int
     {
-        return $this->redis->get(config('"circuit_breaker.sms_provider.open'));
+        return $this->redis->get(config('circuit_breaker.sms_provider.open'));
     }
 
     public function setState(string $providerName,)
