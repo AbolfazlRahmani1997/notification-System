@@ -2,33 +2,46 @@
 
 namespace App\Services;
 
-use App\Models\SmsPanel;
-use App\Repositories\Interfaces\SmsPanelRepositoryInterface;
-use App\Services\Interfaces\SmsPanelServiceInterface;
-use Illuminate\Database\QueryException;
-use Illuminate\Support\Facades\DB;
+use App\Enums\SMSPanelTypeEnum;
+use App\Exceptions\ProviderFailedException;
+use App\Services\Interfaces\SmsServiceProviderInterface;
+use App\Services\SmsProviderStrategy\SmsIdepardazanProvider;
+use App\Services\SmsProviderStrategy\SmsKavenegarProvider;
 
-class SmsService implements SmsPanelServiceInterface
+class SmsService
 {
-    public function __construct(private SmsPanelRepositoryInterface $repository)
-    {
-    }
+    private SmsServiceProviderInterface $provider;
 
-    public function find(int $id): SmsPanel
+    public function __construct(private CircuitBreaker $circuitBreaker)
     {
-        /** @var SmsPanel $smsPanel */
-        $smsPanel = $this->repository->filterById($id)->firstOrFail();
-        return $smsPanel;
+        $current = $this->circuitBreaker->getCurrent();
+        $this->provider = $this->providerFactory(SMSPanelTypeEnum::from($current));
     }
 
 
-    public function create(array $data):SmsPanel
+    public function sendMessageOneToOne()
     {
-        $result = DB::transaction(function () use ($data) {
-            $this->repository->deActive($data['sms_panel_type']);
-            return $this->repository->store($data);
-        });
-        return $result;
+        try {
+
+            $this->provider->sendSms("09107879978", "salam ,");
+        } catch (ProviderFailedException $e) {
+          $this->circuitBreaker->failed();
+          //todo:try_again
+        }
+    }
+
+
+    private function providerFactory(SMSPanelTypeEnum $enum): SmsServiceProviderInterface
+    {
+        switch ($enum) {
+            case(SMSPanelTypeEnum::SMSIDEHPARDAZAN):
+                return new SmsIdepardazanProvider();
+            case (SMSPanelTypeEnum::KAVENEGAR):
+                return new SmsKavenegarProvider();
+            case (SMSPanelTypeEnum::SMs):
+                return new SmsIdepardazanProvider();
+        }
 
     }
+
 }
