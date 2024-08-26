@@ -14,21 +14,20 @@ class CircuitBreaker
     public function __construct()
     {
         $this->redis = new \Redis();
-        if ($this->redis->lLen('sms_providers_state:half_open') == 0) {
+        if ($this->redis->lLen(config('"circuit_breaker.sms_provider.half_open')) == 0 && $this->redis->exists(config('"circuit_breaker.sms_provider.open')) == false) {
             $this->listOfProviders = SMSPanelTypeEnum::priorityList();
-            $this->redis->set("sms_provider_state:current", array_pop($this->listOfProviders));
+            $this->redis->set(config('"circuit_breaker.sms_provider.open'), array_pop($this->listOfProviders));
             foreach ($this->listOfProviders as $provider) {
-                $this->redis->lPush("sms_providers_state:half_open", $provider);
+                $this->redis->lPush(config('"circuit_breaker.sms_provider.open'), $provider);
             }
         }
-
 
 
     }
 
     public function getCurrent(): int
     {
-        return $this->redis->get('sms_provider_state:current');
+        return $this->redis->get(config('"circuit_breaker.sms_provider.open'));
     }
 
     public function setState(string $providerName,)
@@ -43,10 +42,14 @@ class CircuitBreaker
 
     public function failed()
     {
-        $currentProvider = $this->redis->get("sms_provider_state:current");
-        $this->redis->rPush("sms_providers_state:half_open", $currentProvider);
+        $currentProvider = $this->redis->get(config('"circuit_breaker.sms_provider.open'));
+
+        //todo : Go To Close Stage
+        $this->redis->rPush(config('"circuit_breaker.sms_provider.half_open'), $currentProvider);
+        //todo : Check Health service after go on Current(open Stage)
         $halfOpen = $this->redis->lPop("sms_providers_state:half_open");
-        $this->redis->set("sms_provider_state:current", $halfOpen);
+        //todo :If Passed Healthy Go To Current Else Go To Close stage
+        $this->redis->set(config('"circuit_breaker.sms_provider.open'), $halfOpen);
 
     }
 
@@ -54,21 +57,11 @@ class CircuitBreaker
     public function checkHalfOpen()
     {
 
-        $lists = $this->redis->lrange("sms_providers_close", 0, -1);
+        $lists = $this->redis->lrange(config("circuit_breaker.sms_provider.close"), 0, -1);
 
         /**Service check healthyUp**/
 
 
     }
-
-
-    public static function getInstance(): CircuitBreaker
-    {
-        if (empty(self::$instance)) {
-            self::$instance = new CircuitBreaker();
-        }
-        return self::$instance;
-    }
-
 
 }

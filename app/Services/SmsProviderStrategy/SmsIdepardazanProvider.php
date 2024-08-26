@@ -9,6 +9,9 @@ class SmsIdepardazanProvider implements SmsServiceProviderInterface
 {
 
 
+    /**
+     * @throws ProviderFailedException
+     */
     public function sendSms(string $to, string $message)
     {
        throw new ProviderFailedException("cant send Message from Idepardazan");

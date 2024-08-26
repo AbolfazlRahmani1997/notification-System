@@ -19,28 +19,24 @@ class SmsService
     }
 
 
-    public function sendMessageOneToOne()
+    public function sendMessageOneToOne(string $phone_number,string $message)
     {
         try {
-
-            $this->provider->sendSms("09107879978", "salam ,");
+            $this->provider->sendSms($phone_number, $message);
         } catch (ProviderFailedException $e) {
-          $this->circuitBreaker->failed();
-          //todo:try_again
+            $this->circuitBreaker->failed();
+            //todo:try_again
         }
     }
 
 
     private function providerFactory(SMSPanelTypeEnum $enum): SmsServiceProviderInterface
     {
-        switch ($enum) {
-            case(SMSPanelTypeEnum::SMSIDEHPARDAZAN):
-                return new SmsIdepardazanProvider();
-            case (SMSPanelTypeEnum::KAVENEGAR):
-                return new SmsKavenegarProvider();
-            case (SMSPanelTypeEnum::SMs):
-                return new SmsIdepardazanProvider();
-        }
+        return match ($enum) {
+            SMSPanelTypeEnum::SMSIDEHPARDAZAN => new SmsIdepardazanProvider(),
+            SMSPanelTypeEnum::KAVENEGAR => new SmsKavenegarProvider(),
+            default => new SmsIdepardazanProvider(),
+        };
 
     }
 
