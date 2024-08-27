@@ -21,7 +21,7 @@ class SmsController
     public function generateToken(): string
     {
 
-        return $this->jwtService->generateToken("10")->toString();
+     return   $this->responseWrapper->generateGeneralLogin( $this->jwtService->generateToken("10")->toString());
     }
 
     public function send(SendRequest $request)
