@@ -20,7 +20,12 @@ class SmsKavenegarProvider implements SmsServiceProviderInterface
      */
     private string $api_key;
     private string $lookup_url;
-
+    public function __construct(private TemplateRepositoryInterface $repository)
+    {
+        $this->api_url = config('sms_service_providers.kavenegar.api_url');
+        $this->api_key = config('sms_service_providers.kavenegar.api_key');
+        $this->lookup_url = "/verify/lookup.json";
+    }
     public function sendSmsByTemplate(string $to, string $template_title, array $data)
     {
 
@@ -35,16 +40,11 @@ class SmsKavenegarProvider implements SmsServiceProviderInterface
         }
         $data_send['receptor'] = $to;
         $data_send['template'] = $template_title;
-       $response= Http::post($this->api_url.$this->api_key.$this->lookup_url,$data_send);
+        $response = Http::post($this->api_url . $this->api_key . $this->lookup_url, $data_send);
 
     }
 
-    public function __construct(private TemplateRepositoryInterface $repository)
-    {
-        $this->api_url = config('sms_service_providers.kavenegar.api_url');
-        $this->api_key = config('sms_service_providers.kavenegar.api_key');
-        $this->lookup_url="/verify/lookup.json";
-    }
+
 
     public function sendSms(string $to, string $message)
     {

@@ -17,7 +17,7 @@ class SmsController
     public function send(SendRequest $request)
     {
 
-        dispatch(new SendSms(to: "10", topic: $request->validated('type'), data: $request->validated("data"), provider: Cache::get("default_sms_provider", 1), alternative: SMSPanelTypeEnum::values(),));
+        dispatch(new SendSms(to: "10", topic: $request->validated('type'), data: $request->validated("data"), provider: Cache::get("default_sms_provider", 2), alternative: SMSPanelTypeEnum::values(),));
     }
 
 

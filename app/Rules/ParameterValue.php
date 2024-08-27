@@ -19,14 +19,7 @@ class ParameterValue implements ValidationRule
      */
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
-        /** @var TemplateRepository $templateRepository */
-        $templateRepository = App::make(TemplateRepositoryInterface::class);
-        $template = $templateRepository->filterByTitle(Request::get('type'))->firstOrFail();
 
-        if (count($template->parameters_title)!=count($value))
-        {
-        throw  new HttpException(422,"test");
-        }
 
     }
 
