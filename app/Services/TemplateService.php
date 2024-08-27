@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\Template;
 use App\Repositories\Interfaces\TemplateRepositoryInterface;
 use App\Services\Interfaces\TemplateServiceInterface;
 
@@ -20,9 +21,9 @@ class TemplateService implements TemplateServiceInterface
 
     }
 
-    public function show(int $id)
+    public function show(int $id):Template
     {
-        $template = $this->repository->filterById($id);
+        $template = $this->repository->filterById($id)->firstOrFail();
         return $template;
     }
 

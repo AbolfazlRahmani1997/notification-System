@@ -34,26 +34,10 @@ class SmsService
             $this->provider->sendSmsByTemplate($phone_number, template_title: $template_name, data: $data);
         } catch (ProviderFailedException $e) {
             if (count($this->alternative) > 0) {
-                dispatch(new SendSms(to: $phone_number, topic: $template_name,data:$data,  provider: $this->alternative[0], alternative: $this->alternative));
+                dispatch(new SendSms(to: $phone_number, topic: $template_name, data: $data, provider: $this->alternative[0], alternative: $this->alternative));
             } else {
                 $this->provider = new SmsRedisProvider();
-                $this->provider->sendSms($phone_number, $message);
-            }
-
-
-        }
-    }
-
-    public function sendMessageOneToOne(string $phone_number, string $message)
-    {
-        try {
-            $this->provider->sendSms($phone_number, $message);
-        } catch (ProviderFailedException $e) {
-            if (count($this->alternative) > 0) {
-                dispatch(new SendSms(to: $phone_number, topic: $message, provider: $this->alternative[0], alternative: $this->alternative));
-            } else {
-                $this->provider = new SmsRedisProvider();
-                $this->provider->sendSms($phone_number, $message);
+                $this->provider->sendSmsByTemplate($phone_number, $template_name, $data);
             }
 
 
@@ -69,6 +53,11 @@ class SmsService
             default => new SmsRedisProvider(),
         };
 
+    }
+
+    public function changeDefaultProvider(SMSPanelTypeEnum $panelTypeEnum): bool
+    {
+        return Cache::set("default_sms_provider", $panelTypeEnum);
     }
 
 
