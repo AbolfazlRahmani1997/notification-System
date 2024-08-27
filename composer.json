@@ -9,6 +9,8 @@
         "ext-redis": "*",
         "laravel/framework": "^11.9",
         "laravel/tinker": "^2.9",
+        "lcobucci/clock": "^3.2",
+        "lcobucci/jwt": "^5.3",
         "predis/predis": "^2.2"
     },
     "require-dev": {

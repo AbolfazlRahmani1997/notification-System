@@ -19,7 +19,7 @@ class SmsService
     protected array $alternative;
 
 
-    public function __construct(int $provider = 1, array $alternative = null)
+    public function __construct(int $provider = 1, array $alternative = [])
     {
 
         $this->provider = $this->providerFactory(SMSPanelTypeEnum::from($provider));

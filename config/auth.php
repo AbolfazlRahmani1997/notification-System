@@ -111,5 +111,9 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+    'JWT'=>[
+        "JWT_KEY"=>env('JWT_KEY'),
+        "JWT_RELATED"=>env("JWT_RELATED")
+    ]
 
 ];

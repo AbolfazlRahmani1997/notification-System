@@ -19,4 +19,5 @@ Route::prefix('admin')->group(function () {
         Route::get('/{id}', [\App\Http\Controllers\v1\TemplateController::class, 'show']);
     });
 });
-Route::get('/send', [\App\Http\Controllers\v1\SmsController::class, 'send']);
+Route::post('/send', [\App\Http\Controllers\v1\SmsController::class, 'send'])->middleware(\App\Http\Middleware\EnsureTokenIsValid::class);
+Route::post('/generateToken', [\App\Http\Controllers\v1\SmsController::class, 'generateToken']);

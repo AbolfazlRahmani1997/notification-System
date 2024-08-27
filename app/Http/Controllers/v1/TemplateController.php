@@ -18,7 +18,7 @@ class TemplateController
     {
     }
 
-    public function store(StoreTemplateRequest $request)
+    public function store(StoreTemplateRequest $request): \Illuminate\Http\JsonResponse
     {
         $data = TwoStepValidator::validationTemplateRequestByType(SMSPanelTypeEnum::tryFrom($request->validated('provider')));
         $data= $this->service->store($data);

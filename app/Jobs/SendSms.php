@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
 
 
-class SendSms
+class SendSms implements ShouldQueue
 {
     use Queueable;
 

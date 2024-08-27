@@ -13,6 +13,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         App::register(SmsPanelServiceProvider::class);
+        App::register(AuthServiceProvider::class);
     }
 
     /**
